@@ -7,5 +7,5 @@ PassLok Universal is also designed to be very easy to use. The sender's Lock (pu
 
 The extensions published in the Chrome and Firefox stores are identical, except for the manifest.json file. Those files are renamed in this repo so you know which is which.
 
-First version is 0.5, so it begins (and hopefully stays) in sync with PassLok for Email, also on GitHub.
+First version is 0.5.1, so it begins (and hopefully stays) in sync with PassLok for Email, also on GitHub.
 
