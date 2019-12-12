@@ -1,0 +1,105 @@
+html {
+	-webkit-text-size-adjust: 100%;
+}
+body {
+	font-family: Sans-Serif;
+	margin-left: 10%;
+	margin-right: 10%;
+	overflow: auto;
+	background-color: #FFFFFF;
+	color: #000000;
+}
+.helpitem {
+	font-size: medium;
+	cursor: pointer;
+	padding: 14px;
+	margin: 0;
+}
+.helpitem:hover {
+	background-color: #eeeeee;
+}
+.helptext {
+	font-size: medium;
+	max-height: 0;
+	overflow: hidden;
+	transition: max-height 0.3s ease-out;
+}
+.cssbutton {
+	-webkit-border-radius: 10px;
+  	border-radius: 10px;
+  	font-family: Arial;
+	font-size: small;
+  	padding: 8px;
+  	text-decoration: none;
+	border:0px;
+	margin-right: -2px;
+	color: #666666;
+  	background: #e6e6e6;
+}
+.cssbutton:hover {
+	text-decoration: none;
+	cursor: pointer;
+	background: #d4d4d4;
+}
+.cssbutton:focus {
+    outline: none;
+    box-shadow: 0 0 10px #75b3a2;
+}
+.cssbox {
+	-webkit-border-radius: 15px;
+  	border-radius: 15px;
+  	padding: 5px;
+  	text-decoration: none;
+	width: 99.4%;
+	-webkit-appearance: none;
+	box-sizing: border-box;
+   	 -webkit-box-sizing:border-box;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+	color: #000000;
+	background: #fffffa;	
+	border:1px solid #dedede;
+	overflow: auto;
+	white-space: pre-line;
+	font-size: smaller;
+}
+.cssbox:focus {
+    outline: none;
+    border:1px solid #00CA68;
+    box-shadow: 0 0 10px #719ECE;
+}
+.message {
+	white-space: pre-line;
+	height: 40px;
+}
+.field-icon {
+  margin-left: -30px;
+  height: 14px;
+  z-index: 2;
+}
+#helpTitle {
+	color: green;
+	font-size:x-large;	
+}
+#canary {
+	float: left;
+}
+#helpTable {
+	width: 1000px;
+}
+#outputBox {
+	padding: 5px;
+	background: #f0fffb
+}
+#helpCheckCell {
+	text-align: center;
+}
+#siteName {
+	text-align: center;
+}
+#userTable {
+	display: none;
+}
+#userName {
+	text-align: center;
+}
