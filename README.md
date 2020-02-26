@@ -11,4 +11,4 @@ PassLok Universal also includes the functions of two other extensions published 
 
 The extensions published in the Chrome and Firefox stores are identical, except for the manifest.json file. Those files are renamed in this repo so you know which is which.
 
-First version is 0.5.1, so it begins (and hopefully stays) in sync with PassLok for Email, also on GitHub.
+First version is 0.5.1, so it begins (and hopefully stays) in sync with PassLok for Email, also on GitHub. Releases begin with v0.5.2

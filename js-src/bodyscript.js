@@ -169,6 +169,7 @@ window.onload = function() {
 		document.getElementById('serial' + i.toString()).addEventListener('focus', function(){lastFocus = i.toString()})
 	}
 	
+	extraMasterScr.style.display = 'none';
 	cancelExtraMasterBtn.addEventListener('click',cancelextraMaster);
 	acceptExtraMasterBtn.addEventListener('click',acceptextraMaster);
 	extraMasterIcon.addEventListener('click',function(){showPwd('extraMaster')});
@@ -178,14 +179,26 @@ window.onload = function() {
 	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
     	activeTab = tabs[0];
 		chrome.tabs.sendMessage(activeTab.id, {message: "start"});
-	});
 
-	startTimer = setTimeout(function(){											//in case there's no reply from the content script
-		if(activeTab.url){
-			websiteName = nameFromURL(activeTab.url)
+		if(activeTab.url){								//the rest in case there's no meaningful reply from the content script
+			websiteURL = activeTab.url;
+			var websiteParts = websiteURL.replace(/\/$/,'').split(':')[1].replace(/\/\//,'').split('?')[0].split('#')[0].split('.');
+			if(websiteParts.length > 1){
+				if(websiteParts[websiteParts.length - 1].match(/htm|php/)) websiteParts = websiteParts.slice(0,websiteParts.length - 1);
+				if(websiteParts.length > 1){
+					var	websiteParts2 = websiteParts[websiteParts.length - 2].split('/'),
+						websiteParts3 = websiteParts[websiteParts.length - 1].split('/');
+					websiteName = websiteParts2[websiteParts2.length - 1] + '.' + websiteParts3[0]
+				}else{
+					websiteName = websiteParts[0]
+				}
+			}else{
+				websiteName = websiteParts[0]
+			}
 		}
-		showMemo(websiteName)
-	}, 400)							//open default screen if there's no reply from the content script
+		var name = websiteName;
+		startTimer = setTimeout(function(){showMemo(name)},100)
+	})
 }
 
 //	time10 = hashTime10();											//get milliseconds for 10 wiseHash at iter = 10

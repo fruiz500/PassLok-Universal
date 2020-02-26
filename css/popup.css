@@ -244,3 +244,6 @@ opacity: 0;
 #inviteBtn:hover {
 	background: #cae5fd;
 }
+#extraMasterScr {
+	display: none;
+}

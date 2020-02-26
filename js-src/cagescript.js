@@ -41,7 +41,7 @@ window.onload = function() {
 		}else if(pageURL.value == "DisconnectMe"){
 			pageURL.value = "search.disconnect.me"
 		}else if(pageURL.value == "Gibiru (safe Google)"){
-			pageURL.value = "anonymous-gibiru.com"
+			pageURL.value = "gibiru.com"
 		}else if(pageURL.value == "StartPage"){
 			pageURL.value = "startpage.com"
 		}else if(pageURL.value == "FindX"){

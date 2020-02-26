@@ -2,7 +2,7 @@
  "name": "PassLok Universal",
  "short_name": "PassLok",
  "description": "High security encryption for any email, plus Passwords.",
- "version": "0.5.1",
+ "version": "0.5.2.1",
  "manifest_version": 2,
  "icons": {
  "16": "img/passlok-icon16inv.png",
@@ -14,8 +14,9 @@
 	"storage",
     "activeTab",
 	"webRequest",
-	"webRequestBlocking", "<all_urls>",
-	"contextMenus", "history"
+	"webRequestBlocking",
+	"contextMenus", "history",
+	"<all_urls>"
     ],
 "background":{
 	"scripts": [

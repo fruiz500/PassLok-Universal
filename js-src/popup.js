@@ -5,8 +5,7 @@ var masterPwd, websiteName, prevWebsiteName;
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
 	  
-	if(request.message == "start_info"){							//initial message from content script; begins with SynthPass stuff	
-		clearTimeout(startTimer);	  
+	if(request.message == "start_info"){							//initial message from content script; begins with SynthPass stuff	 
 		var hostParts = request.host.split('.');						//get name of the website, ignoring subdomains
 		if(hostParts[hostParts.length - 1].length == 2 && hostParts[hostParts.length - 2].length < 4){			//domain name with second-level suffix
 			websiteName = hostParts.slice(-3).join('.')
@@ -19,6 +18,8 @@ chrome.runtime.onMessage.addListener(
 		if(!websiteName) websiteName = nameFromURL(websiteURL);
   
 		if(isUserId){								//userId field found, so display box, filled from storage
+			clearTimeout(startTimer);	 
+			memoArea.style.display = 'none';
 			openScreen('synthScr');
 			userTable.style.display = 'block';
 			okSynthBtn.style.display = '';
@@ -26,12 +27,13 @@ chrome.runtime.onMessage.addListener(
 		}
 
 		if(pwdNumber){					             //password boxes found, so display the appropriate areas and load serial into first box
-	//populate cached Key and interface	  	
+			clearTimeout(startTimer);	 
+			memoArea.style.display = 'none';
 			if(masterPwd){
 				masterPwd1Box.value = masterPwd;
 				masterPwd1Icon.style.display = 'none'
 			}else{
-				retrieveMaster()
+				retrieveMaster()					  //populate cached Key and interface	 
 			}
 
 			openScreen('synthScr');
@@ -62,15 +64,14 @@ chrome.runtime.onMessage.addListener(
 			}
 
 	//now get the serial from sync storage, and put it in the first serial box, and the userID in its place
-			if(memoBox.style.display != 'block'){
+			if(isUserId || pwdNumber){
 				chrome.storage.sync.get(websiteName, function (obj){
 					var serialData = obj[websiteName];
 					if(serialData){
 						if(serialData[0]) serial1.value = serialData[0];			//populate serial box
 						if(serialData[1]) userID.value = serialData[1];		//and user ID regardless of whether it is displayed
 						if(serialData[2]) pwdLength.value = serialData[2];		//and password length, if any
-						if(serialData[3]) cryptoStr = serialData[3];			//put encrypted password, if any, in global variable
-						if(serialData[4]) memoBox.value = serialData[4];			//get memo, in case there's one
+						if(serialData[3]) cryptoStr = serialData[3]			//put encrypted password, if any, in global variable
 					}
 				});
 			}
@@ -87,6 +88,7 @@ chrome.runtime.onMessage.addListener(
 			var length = request.PLstuff.length;
 
 			if(request.largeInputs > 0){			//there are fillable boxes, so open the compose interface
+				clearTimeout(startTimer);
 				hasInputBoxes = true;
 				callKey = 'compose';
 				myEmail = retrieveMyEmail(websiteName)	//get myEmail from sync storage, which also gets all the other Locks
@@ -101,13 +103,13 @@ chrome.runtime.onMessage.addListener(
 				}else{
 					text2decrypt = request.PLstuff[0]
 				}
+				clearTimeout(startTimer);
 				callKey = 'decrypt';
 				soleRecipient = true;		//no way to tell when decrypting, so assume sole recipient
 				myEmail = retrieveMyEmail(websiteName)	//get myEmail from sync storage, which also gets all the other Locks
 
 			}else{							//found nothing, so do generic page action, loading stored notes
-				if(!masterPwd) retrieveMaster();
-				showMemo(true)
+				if(!masterPwd) retrieveMaster()
 			}
 		}
 
@@ -180,24 +182,82 @@ chrome.runtime.onMessage.addListener(
   }
 )
 
+//fetches userId and displays in box so it can be added
+function fetchUserId(){
+	userTable.style.display = 'block';
+	lengthLabel.style.display = 'none';
+	pwdLength.style.display = 'none';
+	masterPwdMsg.textContent = "There was no user ID stored";
+	memoArea.style.display = 'none';
+	okSynthBtn.textContent = 'OK';
+
+	//now get the userID from storage, and put it in its place
+	chrome.storage.sync.get(websiteName, function (obj){
+		var serialData = obj[websiteName];
+		if(serialData){
+			if(serialData[1]){userID.value = serialData[1];		//fill user ID
+			okSynthBtn.style.display = '';
+			masterPwdMsg.textContent = "Click OK to put it in the page"
+			}
+		}
+	})
+}
+
+var memoCipher = '';					//container for encrypted note
+
+//fetches other info
+function fetchWebsiteMemo(){
+	chrome.storage.sync.get(websiteName, function (obj){
+		if(!memoBox.value.trim()){							//do the following only if not filled already
+			var serialData = obj[websiteName];
+			if(serialData){												//need to get everything in case it is saved
+				if(serialData[0]) serial1.value = serialData[0];			//populate serial box
+				if(serialData[1]) userID.value = serialData[1];		//and user ID regardless of whether it is displayed
+				if(serialData[2]) pwdLength.value = serialData[2];		//and password length, if any
+				if(serialData[3]){cryptoStr = serialData[3]}else{cryptoStr = ''};	//put encrypted password, if any, in global variable
+				if(serialData[4]) memoCipher = serialData[4];		//get memo, in case there's one
+			}
+
+	//the rest is to decrypt an encrypted note		
+			if(memoCipher){
+				if(!masterPwd){														//get master Password if not in memory
+					openScreen('extraMasterScr');
+					extraMasterAction = 'decrypt';
+					extraMasterMsg.textContent = "Enter the master Password in order to see its secure note";
+					extraMasterBox.focus();
+					return
+				}
+				var cipher = nacl.util.decodeBase64(memoCipher);
+				if(!cipher) return false;
+				var	nonce = cipher.slice(0,9),												//no marker byte
+					nonce24 = makeNonce24(nonce),
+					cipher2 = cipher.slice(9),
+					pwd2 = wiseHash(masterPwd,websiteName),
+					plain = nacl.secretbox.open(cipher2,nonce24,pwd2);
+				if(plain){
+					preserveMaster();									//sync only if successful
+					memoBox.value = nacl.util.encodeUTF8(plain)
+				}else{
+					masterPwdMsg.textContent = "Decryption of secure note has failed";
+					memoBox.value = ''
+				}
+			}
+		}
+	})
+}
+
 //called if there is no response from the content script or there is no PassLok or SynthPass function to do
-function showMemo(isName){
-	if(isName && !memoBox.value.trim()) fetchWebsiteMemo();
+function showMemo(name){
+	websiteName = name;
+	if(!memoBox.value.trim()) fetchWebsiteMemo();
 	userTable.style.display = 'none';
 	pwdTable.style.display = 'none';
 	memoArea.style.display = 'block';
 	openScreen('synthScr');
-	if(isName){
-		okSynthBtn.textContent = 'Save';
-		synthTitle.textContent = "PassLok notes";
-		failMsg.textContent = "I cannot see a password to be filled, so here are your secure notes on this website.\r\nclick me for user ID";
-		memoBox.focus()
-	}else{
-		okSynthBtn.style.display = 'none';
-		memoBox.style.display = 'none';
-		delete failMsg;
-		masterPwdMsg.textContent = "I cannot see a password to be filled, but here is a button to reload the page securely"
-	}
+	okSynthBtn.textContent = 'Save';
+	synthTitle.textContent = "PassLok notes";
+	failMsg.textContent = "I cannot see a password to be filled, so here are your secure notes on this website.\r\nclick me for user ID";
+	memoBox.focus()
 }
 
 function retrieveMyEmail(loc){
@@ -453,70 +513,6 @@ function pwdSynth(boxNumber, pwd, serial, isPin, isAlpha){
 			return base.charAt(62) + changeBase(nacl.util.encodeBase64(wiseHash(pwd,websiteName + serial.trim())).replace(/=$/g,''), base64, base) 				//use at least the first of the characters on the list
 		}
 	}
-}
-
-//fetches userId and displays in box so it can be added
-function fetchUserId(){
-	userTable.style.display = 'block';
-	lengthLabel.style.display = 'none';
-	pwdLength.style.display = 'none';
-	masterPwdMsg.textContent = "There was no user ID stored";
-	memoArea.style.display = 'none';
-	okSynthBtn.textContent = 'OK';
-
-	//now get the userID from storage, and put it in its place
-	chrome.storage.sync.get(websiteName, function (obj){
-		var serialData = obj[websiteName];
-		if(serialData){
-			if(serialData[1]){userID.value = serialData[1];		//fill user ID
-			okSynthBtn.style.display = '';
-			masterPwdMsg.textContent = "Click OK to put it in the page"
-			}
-		}
-	})
-}
-
-var memoCipher = '';					//container for encrypted note
-
-//fetches other info
-function fetchWebsiteMemo(){
-	chrome.storage.sync.get(websiteName, function (obj){
-		if(!memoBox.value.trim()){							//do the following only if not filled already
-			var serialData = obj[websiteName];
-			if(serialData){												//need to get everything in case it is saved
-				if(serialData[0]) serial1.value = serialData[0];			//populate serial box
-				if(serialData[1]) userID.value = serialData[1];		//and user ID regardless of whether it is displayed
-				if(serialData[2]) pwdLength.value = serialData[2];		//and password length, if any
-				if(serialData[3]){cryptoStr = serialData[3]}else{cryptoStr = ''};	//put encrypted password, if any, in global variable
-				if(serialData[4]) memoCipher = serialData[4];		//get memo, in case there's one
-			}
-
-	//the rest is to decrypt an encrypted note		
-			if(memoCipher){
-				if(!masterPwd){														//get master Password if not in memory
-					openScreen('extraMasterScr');
-					extraMasterAction = 'decrypt';
-					extraMasterMsg.textContent = "Enter the master Password in order to see its secure note";
-					extraMasterBox.focus();
-					return
-				}
-				var cipher = nacl.util.decodeBase64(memoCipher);
-				if(!cipher) return false;
-				var	nonce = cipher.slice(0,9),												//no marker byte
-					nonce24 = makeNonce24(nonce),
-					cipher2 = cipher.slice(9),
-					pwd2 = wiseHash(masterPwd,websiteName),
-					plain = nacl.secretbox.open(cipher2,nonce24,pwd2);
-				if(plain){
-					preserveMaster();									//sync only if successful
-					memoBox.value = nacl.util.encodeUTF8(plain)
-				}else{
-					masterPwdMsg.textContent = "Decryption of secure note has failed";
-					memoBox.value = ''
-				}
-			}
-		}
-	})
 }
 
 var extraMasterAction = 'decrypt';				//so the next function knows what to do after loading the master Password
