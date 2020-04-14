@@ -6,7 +6,7 @@ chrome.runtime.onMessage.addListener(
                 chrome.tabs.create({url: '../html/help.html'})
 
            }else if(request.newtab == "chatTab") {							//to open a chat in a separate tab
-				chrome.tabs.create({url: 'https://passlok.com/chat/index.html#' + request.typetoken})
+				chrome.tabs.create({url: 'https://passlok.com/chat2/index.html#' + request.typetoken})
 
 		   }else if(request.message == "preserve_master"){				//cache SynthPass master Password
 			   masterPwd = request.masterPwd;
