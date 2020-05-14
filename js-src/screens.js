@@ -1,6 +1,6 @@
 ﻿//to insert encrypted data into email page
 function insertInBody(node){
-	chrome.tabs.sendMessage(activeTab.id, {message: "clicked_OK", PLoutput: node.outerHTML});
+	chrome.tabs.sendMessage(activeTab.id, {message: "clicked_OK", PLoutput: node.innerHTML});
 }
 
 //to view only one screen
@@ -294,12 +294,12 @@ function loadFile(){
 		if(fileToLoad.type.slice(0,4) == "text"){
 			composeBox.innerHTML += "<br><br>" + URLFromFileLoaded.replace(/  /g,' &nbsp;')
 		}else{
-			composeBox.innerHTML += '<br><a download="' + escapedName + '" href="' + safeHTML(URLFromFileLoaded) + '">' + escapedName + '</a>'
+			composeBox.innerHTML += '<br><a download="' + escapedName + '" href="' + decryptSanitizer(URLFromFileLoaded) + '">' + escapedName + '</a>'
 		}
 	}
 	if(fileToLoad.type.slice(0,4) == "text"){
 		fileReader.readAsText(fileToLoad, "UTF-8");
-		composeMsg.textContent = 'This is the content of file ' + safeHTML(fileToLoad.name)
+		composeMsg.textContent = 'This is the content of file ' + decryptSanitizer(fileToLoad.name)
 	}else{
 		fileReader.readAsDataURL(fileToLoad, "UTF-8");
 		composeMsg.textContent = 'The file has been loaded in encoded form. It is NOT ENCRYPTED.'
@@ -316,7 +316,7 @@ function loadImage(){
 			composeMsg.textContent = 'This file is not a recognized image type';
 			return
 		}
-		composeBox.innerHTML += safeHTML('<img src="' + URLFromFileLoaded.replace(/=+$/,'') + '">')
+		composeBox.innerHTML += decryptSanitizer('<img src="' + URLFromFileLoaded.replace(/=+$/,'') + '">')
 	};
 	fileReader.readAsDataURL(fileToLoad, "UTF-8")
 }

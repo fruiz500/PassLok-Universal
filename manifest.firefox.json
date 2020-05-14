@@ -2,7 +2,7 @@
  "name": "PassLok Universal",
  "short_name": "PassLok",
  "description": "High security encryption for any email, plus Passwords.",
- "version": "0.5.3",
+ "version": "0.5.3.1",
  "manifest_version": 2,
  "icons": {
  "16": "img/passlok-icon16inv.png",
@@ -11,11 +11,10 @@
  },
  "content_security_policy": "default-src 'self'; img-src 'self' data:; connect-src 'self' data:; frame-src 'self' https://* http://*; style-src 'self' 'unsafe-inline'",
 "permissions":[
-	"storage",
+	"storage", "activeTab",
 	"webRequest",
 	"webRequestBlocking",
-	"contextMenus", "history",
-	"<all_urls>"
+	"contextMenus", "history"
     ],
 "background":{
 	"scripts": [
@@ -32,18 +31,6 @@
         "default_title": "PassLok Universal",
         "default_popup": "html/popup.html"
   },
-"content_scripts": [{
-	"matches": [
-        "<all_urls>"
-    ],
-    "js": [
-		"js-src/content.js"
-	],
-    "run_at":"document_idle",
-    "all_frames":true,
-	"match_about_blank": true
-  }],
-
  "applications": {
   	"gecko": {
     	"id": "universal@passlok.com"
