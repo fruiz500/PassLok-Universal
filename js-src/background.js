@@ -1,7 +1,7 @@
 //deletes cached password after 5 minutes unless reset. Also used to open a chat-containing tab
 chrome.runtime.onMessage.addListener(
       function (request, sender, sendResponse) {
-		
+
 			if (request.newtab == "helpTab") {								//to open extra tab for help. Not used
                 chrome.tabs.create({url: '/html/help.html'})
 
@@ -22,7 +22,7 @@ chrome.runtime.onMessage.addListener(
 				locDir = request.locDir;
 				prevWebsiteName = request.prevWebsiteName;
 				resetKeyTimer()
-				
+
 			}else if(request.message == "retrieve_master"){
 				chrome.runtime.sendMessage({message: 'master_fromBg', masterPwd: masterPwd});
 				resetKeyTimer()
@@ -34,7 +34,7 @@ chrome.runtime.onMessage.addListener(
 			}else if(request.message == "reset_timer"){
 				resetKeyTimer();			//reset timer to erase cached keys
 
-			}else if(request.message == "reset_now"){ 
+			}else if(request.message == "reset_now"){
 				resetNow();					//same but effective immediately
 
 			}
@@ -46,7 +46,7 @@ var masterPwd, KeyStr, myKey, myEmail, myLockbin, myLock, myezLock, locDir, prev
 
 var	keyTimer = 0;
 
-//deletes keys after 5 minutes	
+//deletes keys after 5 minutes
 function resetKeyTimer(){
 	var period = 300000;
 	clearTimeout(keyTimer);
@@ -77,7 +77,7 @@ function openLink(info,tab){
 }
 
 chrome.contextMenus.create({
-	title: "Open Link in Cage", 
-	contexts:["selection"], 
+	title: "Open Link in Cage",
+	contexts:["selection"],
 	onclick: openLink
 });

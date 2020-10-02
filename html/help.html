@@ -7,7 +7,7 @@
 <link href="../css/help.css" rel="stylesheet">
 
 <script src="../js-src/help.js"></script>
-      
+
       <!--this only loads two regular expressions: blackListExp and wordListExp, plus their lengths-->
 <!--based on WiseHash, by yours truly. https://github.com/fruiz500/wisehash-->
 <script src="../js-src/dictionary_en.js"></script>
@@ -172,14 +172,14 @@
     <p>The recipient will then save the attachment and load it back into PassLok's decrypt dialog (there is a <strong>Decrypt file/image</strong> button for this, visible after clicking &#9658;), and then the file will decrypt automatically. This button also allows loading the sender's PassLok Lock (any format supported by PassLok Privacy will work) from a .txt file rather than from an invitation message, which might be useful for sharing someone else's Lock.</p>
     <p>Encrypting files is explained in this video: <a href="https://www.youtube.com/watch?v=S9sK4V0tUe0" target="_blank">https://www.youtube.com/watch?v=S9sK4V0tUe0</a>, and encrypting into files in this one: <a href="https://www.youtube.com/watch?v=5YY6-tNJe94" target="_blank">https://www.youtube.com/watch?v=5YY6-tNJe94</a></p>
   </div><hr>
-        <h3 class="helpitem">How about inserting images, rich formatting?</h3> 
+        <h3 class="helpitem">How about inserting images, rich formatting?</h3>
   <div class="helptext">
   		<p>
   		<p>Images that you want to encrypt can be inserted in the same way as formatted text. Simply click the second from the right button on the formatting toolbar, which looks like this: <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAMAAABhEH5lAAAAbFBMVEUAAAAAAAAmJibm5uaJiYnZ2dnn5+e5ubmBgYHNzc3z8/Pr6+vW1ta2trZ/f3/y8vLQ0NDPz8/Dw8OgoKCOjo54eHgcHBwGBgb+/v7T09PIyMi+vr6srKyEhIRqampiYmJbW1tPT08qKioRERGLOctyAAAAAXRSTlMAQObYZgAAAHJJREFUGNOtzkkShCAQRNFKbLsVsZ3nWe9/R8EAYeHSv6u3qEh6qo0/TkUiKULNbCglfZGSjf0vCvWZLTmxwBBXVGG1NO2D+hoIQ6IHmrKrciJDfgxIBGbPId12E//pUjOiyHydCGtFyQG3kWTcc4ro1U7vPAUU4TAxJQAAAABJRU5ErkJggg==" /></p>
   		<p>A dialog will open so you can load whatever local image you wish. Bear in mind that images can be large in data size, so the email service may end up clipping the encrypted message. PassLok will warn you in that event, so you can encrypt it to a file instead, and load it as an attachment.</p>
   		<p>If the image comes from a website, you have the option to open that website on a separate browser window and drag the image into PassLok, or do a copy/paste operation. In this case, the image will load as a link to the external website, which will make the encrypted message much smaller. This may pose security concerns, however.</p>
   		<p>Images loaded into the email's compose or reply windows before clicking the PassLok don't have any security (in fact, they may be uploaded to the email server immediately and without encryption, so don't do it), and are stripped when the PassLok encryption dialog loads.</p>
-  </div><hr>  
+  </div><hr>
   <h3 class="helpitem">I don't want my messages to look encrypted to a casual observer</h3>
   <div class="helptext">
         <p>
@@ -202,7 +202,7 @@
   <h3 class="helpitem">What is Hidden message mode?</h3>
   <div class="helptext">
         <p>
-        <p>When you turn on the <strong>Hidden msg.</strong> option at the bottom of the encrypt dialog  (you may need to click &#9658; first), PassLok includes a second message (limit 75 characters), which is encrypted under a separate key. Its presence is undetectable, and it won't make the encrypted result any longer or shorter. This is the process to use this mode:                
+        <p>When you turn on the <strong>Hidden msg.</strong> option at the bottom of the encrypt dialog  (you may need to click &#9658; first), PassLok includes a second message (limit 75 characters), which is encrypted under a separate key. Its presence is undetectable, and it won't make the encrypted result any longer or shorter. This is the process to use this mode:
         <p>When you are the sender:</p>
         <ol>
           <li>Check the <strong>Hidden msg.</strong> box, in addtion to setting the encryption mode and optionally Concealed or Invisible mode, and click an <strong>Encrypt</strong> button after you have typed in the main message.</li>
@@ -292,7 +292,7 @@
     <p>Other times the website won't accept the password until you have actually typed into that box. Just click on the filled password, type any character somewhere inside, then delete it immediately.</p>
     <p>And sometimes you encounter websites that just don't want to cooperate. This is why we have the little dialog below, which works exactly like the popup to synthesize a single password, and displays the result so you can edit it, copy it, and paste it manually. Since this help page is no longer connected to the website you want to log into, there is an extra box to enter the website name (just the last two words, as in "passlok.com", case insensitive), which PassLok Universal would have taken directly from the website. You also need to supply the serial, if any, and the length or special characters to include if different from the !#_ set. None of this data will be remembered. Because this dialog does not involve storage, it does not work with user-supplied passwords.</p>
     <p>For your protection, the input fields will be cleared after the password is synthesized, and the output field when it is copied to clipboard. Clicking the title of this help item clears the output as well.</p>
-    <p>There is a 3-minute video on YouTube explaining most of this with examples: <a href="https://www.youtube.com/watch?v=Y5jwImGkzCc" target="_blank">https://www.youtube.com/watch?v=Y5jwImGkzCc</a></p> 
+    <p>There is a 3-minute video on YouTube explaining most of this with examples: <a href="https://www.youtube.com/watch?v=Y5jwImGkzCc" target="_blank">https://www.youtube.com/watch?v=Y5jwImGkzCc</a></p>
 <p id="masterHelpMsg" class="message" title="password strength appears here as you type, along with a mnemonic word">Fill the fields below and click OK</p>
 <table width="1000px" id="helpTable">
 <tr>
@@ -367,7 +367,7 @@ Output
   <div class="helptext">
     <p>PassLok Universal does not have general options, but sometimes a website allows only passwords of a certain length or composition. To take care of this, you can enter some additional data in the <strong>length</strong> box, which will be remembered next time you load that website. These can be entered in any order:</p>
     <ul>
-    <li>To limit the length to a certain value, enter the numeric value in the box (as in 20, or 15)    
+    <li>To limit the length to a certain value, enter the numeric value in the box (as in 20, or 15)
     <li>To output only numbers, enter "num" or "pin" without the quotes (or any word that contains those strings, such as "number"); default length is 4
     <li>To force alphanumeric output, without any special characters, enter "al" without the quotes (or any word that contains that string, such as "alpha"); default length is 44
     <li>To use certain special characters instead of the default !#_ set, enter them in the box; default length is 44, with the first character in the set appearing at the beginning
@@ -407,7 +407,7 @@ Output
       </ul>
       <li>If the published hash matches what you obtained from the .xpi file, all is good; go ahead and install PassLok Universal by clicking the Add-ons icon on the menu, then the little gear icon, and selecting "Install Add-on from file." After you navigate the selection tp the .xpi file you just checked, PassLok Universal will install.</li>
     </ol>
-  </div><hr> 
+  </div><hr>
         <h3 class="helpitem">Privacy Statement, Legal Notices, and Warrant Canary</h3>
   <div class="helptext">
     <p>
