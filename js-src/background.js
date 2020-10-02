@@ -3,10 +3,10 @@ chrome.runtime.onMessage.addListener(
       function (request, sender, sendResponse) {
 		
 			if (request.newtab == "helpTab") {								//to open extra tab for help. Not used
-                chrome.tabs.create({url: '../html/help.html'})
+                chrome.tabs.create({url: '/html/help.html'})
 
            }else if(request.newtab == "chatTab") {							//to open a chat in a separate tab
-				chrome.tabs.create({url: 'https://passlok.com/chat/index.html#' + request.typetoken})
+				chrome.tabs.create({url: 'https://passlok.com/chat/chat.html#' + request.typetoken})
 
 		   }else if(request.message == "preserve_master"){				//cache SynthPass master Password
 			   masterPwd = request.masterPwd;
@@ -73,7 +73,7 @@ function resetNow(){
 
 //this one for links by right-click
 function openLink(info,tab){
-	if(info.linkUrl) chrome.tabs.create({url: '../html/pagecage.html#' + info.linkUrl});
+	if(info.linkUrl) chrome.tabs.create({url: '/html/pagecage.html#' + info.linkUrl});
 }
 
 chrome.contextMenus.create({

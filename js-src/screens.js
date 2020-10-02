@@ -1,6 +1,6 @@
 ﻿//to insert encrypted data into email page
 function insertInBody(node){
-	chrome.tabs.sendMessage(activeTab.id, {message: "clicked_OK", PLoutput: node.outerHTML});
+	chrome.tabs.sendMessage(activeTab.id, {message: "clicked_OK", PLoutput: node.innerHTML});
 }
 
 //to view only one screen
@@ -25,7 +25,7 @@ function openReadScreen(){
 
 //resizes screens to fit the content
 function resizeWindow(name){
-	var contentWidth = 600;
+	var contentWidth = 620;
 
 	var contentHeight = document.getElementById(name).offsetHeight + 50;
 	window.resizeTo(contentWidth,contentHeight)
@@ -40,7 +40,7 @@ function blinkMsg(element){
 	element.appendChild(blinker)
 }
 
-var hideImg = '../img/hideImg.png', eyeImg = '../img/eyeImg.png';
+var hideImg = '/img/hideImg.png', eyeImg = '/img/eyeImg.png';
 
 //this is for showing and hiding text in password input boxes
 function showPwd(name){
@@ -79,12 +79,12 @@ function switchReadButtons(){
 		moreReadButtons.style.display = '';
 //		readInterfaceBtn.innerHTML = '&#9668;';
 		readInterfaceBtn.textContent = '\u25C4';
-		readMsg.textContent = "Click the big button to decrypt a file or an image, the small one to reveal a hidden message"
+		readMsg.textContent = "Click the first new button to decrypt a file or an image, the second to reveal a hidden message, the third to display your Lock"
 	}else{
 		moreReadButtons.style.display = 'none';
 //		readInterfaceBtn.innerHTML = '&#9658;';
 		readInterfaceBtn.textContent = '\u25BA';
-		readMsg.textContent = "Click the arrow to decrypt attachments or reveal a hidden message"
+		readMsg.textContent = "Click the arrow to decrypt attachments, reveal a hidden message, or display your Lock"
 	}
 }
 

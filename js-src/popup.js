@@ -58,6 +58,7 @@ chrome.runtime.onMessage.addListener(
 					}else if(pwdNumber >= 5){			//too many boxes
 						pwdTable.style.display = 'none';
 						okSynthBtn.style.display = 'none';
+						clipbdBtn.style.display = 'none';
 						masterPwdMsg.textContent = "Too many password fields. Try filling them manually";
 					}
 				}	  
@@ -255,6 +256,7 @@ function showMemo(name){
 	memoArea.style.display = 'block';
 	openScreen('synthScr');
 	okSynthBtn.textContent = 'Save';
+	clipbdBtn.style.display = 'none';
 	synthTitle.textContent = "PassLok notes";
 	failMsg.textContent = "I cannot see a password to be filled, so here are your secure notes on this website.\r\nclick me for user ID";
 	memoBox.focus()
@@ -310,7 +312,7 @@ retrieveKeys();
 var pwdNumber = 0, hasInputBoxes, cryptoStr = '';
 
 //gets executed with the OK button
-function doSynth() {
+function doSynth(clipOn) {
 	if(memoArea.style.display == 'block'){					//save memo into field 4, along with everything else
 		if(websiteName){
 			if(!masterPwd){							//get master Password if not in memory
@@ -390,6 +392,8 @@ function doSynth() {
 				newPwd = pwdSynth(1,pwdStr1,serialStr1,isPin,isAlpha);
 			if(!newPwd) return;								//bail out if just erasing stored password
 			pwdOut.push(newPwd.slice(0,lengthStr));
+			
+			if(clipOn) copyStr(newPwd.slice(0,lengthStr));	//copy this one to clipboard if so directed
 	
 	//fill missing inputs and compute the rest of the passwords
 			if(pwdNumber > 1){
@@ -666,4 +670,15 @@ function pwdKeyupHelp(evt){
 //displays output password length
 function outputKeyup(){
 	helpMsg.textContent = "Output is " + outputBox.textContent.length + " characters long"
+}
+
+//for copying the result to clipboard. Uses invisible input element.
+function copyStr(string){
+	var box = document.createElement('textarea');
+	box.value = string;
+	document.body.appendChild(box);
+	box.focus();
+	box.select();
+	document.execCommand('copy');
+	document.body.removeChild(box)
 }
