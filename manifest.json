@@ -1,34 +1,32 @@
 {
- "name": "PassLok Universal",
- "short_name": "PassLok",
- "description": "High security encryption for any email, plus Passwords.",
- "version": "0.5.7",
- "manifest_version": 2,
- "icons": {
- "16": "img/passlok-icon16inv.png",
- "48": "img/passlok-icon48inv.png",
- "128": "img/passlok-touch-icon128.png"
- },
- "content_security_policy": "default-src 'self'; img-src 'self' data:; connect-src 'self' data:; frame-src 'self' https://* http://*; style-src 'self' 'unsafe-inline'",
-"permissions":[
-	"storage", "activeTab",
-	"webRequest",
-	"webRequestBlocking",
-	"contextMenus", "history"
-    ],
-"background":{
-	"scripts": [
-		"js-src/background.js"
-	],
-	"persistent": true
-	},
-"browser_action": {
-        "default_icon": {
-        "16": "img/passlok-icon16inv.png",
-        "48": "img/passlok-icon48inv.png",
-        "128": "img/passlok-touch-icon128.png"
-        },
-        "default_title": "PassLok Universal",
-        "default_popup": "html/popup.html"
+  "name": "PassLok Universal",
+  "short_name": "PassLok",
+  "description": "High security encryption for any email, plus Passwords.",
+  "version": "0.5.8",
+  "manifest_version": 3,
+  "icons": {
+  "16": "img/passlok-icon16inv.png",
+  "48": "img/passlok-icon48inv.png",
+  "128": "img/passlok-touch-icon128.png"
+  },
+  "content_security_policy": {
+    "extension_pages": "default-src 'self'; img-src 'self' data:; connect-src 'self' data:; frame-src 'self' https://* http://*; style-src 'self' 'unsafe-inline'"
+  },
+  "permissions":[
+    "storage", "activeTab",
+    "scripting", "alarms",
+    "contextMenus", "history"
+  ],
+  "background":{
+    "service_worker": "background.js"
+    },
+  "action": {
+    "default_icon": {
+      "16": "img/passlok-icon16inv.png",
+      "48": "img/passlok-icon48inv.png",
+      "128": "img/passlok-touch-icon128.png"
+    },
+    "default_title": "PassLok Universal",
+    "default_popup": "html/popup.html"
   }
 }

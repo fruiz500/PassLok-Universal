@@ -180,13 +180,34 @@ window.onload = function() {
 	extraMasterIcon.addEventListener('click',function(){showPwd('extraMaster')});
 	extraMasterBox.addEventListener('keyup',function(event){boxKeyup('extraMaster',event)});
 
+	if(!masterPwd){															//get master pwd from session storage
+		let gettingPwd = chrome.storage.session.get("masterPwd");		//this is a Promise
+		gettingPwd.then(function(result){
+			if(result["masterPwd"]){
+				masterPwd = result["masterPwd"];
+				masterPwd1Box.value = masterPwd;
+				masterPwd1Icon.style.display = 'none'
+			}
+		})
+	}
+
+	if(!KeyStr){															//get Key from session storage; similar to above
+		let gettingKey = chrome.storage.session.get("KeyStr");		//this is a Promise
+		gettingKey.then(function(result){
+			if(result["KeyStr"]){
+				KeyStr = result["KeyStr"]
+			}
+		})
+	}
+
 //collect data from content script. Also triggers initialization
 	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
     	activeTab = tabs[0];
+	
 //load content script programmatically (needs activeTab permission)
-		chrome.tabs.executeScript({
-			file: "/js-src/content.js",
-			allFrames: true
+		chrome.scripting.executeScript({
+			target: {tabId: activeTab.id, allFrames: true},
+			files: ["/js-src/content.js"]
 		});
 
 		if(activeTab.url){								//the rest in case there's no meaningful reply from the content script

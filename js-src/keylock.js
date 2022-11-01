@@ -492,6 +492,6 @@ function showLock(){
 	if(!refreshKey()) return;											//make sure the key is loaded, otherwise stop to get it
 	var myWordLock = changeBase(myLock,base64,wordListExp,true);	//make word Lock for display
 	
-	readBox.textContent = "This is your ezLock, which is also at the start of any material encrypted by you:\r\n\r\nPL24ezLok==" + myezLock.match(/.{1,5}/g).join("-") + "==PL24ezLok\r\n\r\nThis is your Lock in base64:\r\n\r\nPL24lok==" + myLock + "==PL24lok\r\n\r\nAnd this is your word Lock:\r\n\r\nPL24wordLok==" + myWordLock + "==PL24wordLok/r/n/r/nIt is good practice to display it with a link to a video where you read it aloud, with background music.";
+	readBox.textContent = "This is your ezLock, which is also at the start of any material encrypted by you:\r\n\r\nPL24ezLok==" + myezLock.match(/.{1,5}/g).join("-") + "==PL24ezLok\r\n\r\nThis is your Lock in base64:\r\n\r\nPL24lok==" + myLock + "==PL24lok\r\n\r\nAnd this is your word Lock:\r\n\r\nPL24wordLok==" + myWordLock + "==PL24wordLok\r\n\r\nIt is good practice to display it with a link to a video where you read it aloud, with background music.";
 	readMsg.textContent = "Below is your Lock in several formats. Put any of these in your email signature so people can send you encrypted messages."
 }

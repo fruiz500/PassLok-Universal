@@ -114,29 +114,7 @@ chrome.runtime.onMessage.addListener(
 			}
 		}
 
-	}else if(request.message == "keys_fromBg"){			//get cached keys from background
-		if(request.KeyStr){
-			KeyStr = request.KeyStr;
-			myKey = new Uint8Array(32);				    //must be Uint8Array type
-			for(var i = 0; i < 32; i++) myKey[i] = request.myKey[i];
-			myLockbin = new Uint8Array(32);
-			for(var i = 0; i < 32; i++) myLockbin[i] = request.myLockbin[i];
-			myLock = request.myLock;
-			myezLock = request.myezLock;
-			myEmail = request.myEmail;
-			locDir = request.locDir;
-			prevWebsiteName = request.prevWebsiteName;
-			if(callKey) doAction
-		}
-				
-	}else if(request.message == "master_fromBg"){		//same for SynthPass master Password
-		if(request.masterPwd){
-			masterPwd = request.masterPwd;
-			masterPwd1Box.value = masterPwd;
-			masterPwd1Icon.style.display = 'none'
-		}
-
-	}else if(request.message == "delete_keys"){			//delete cached keys
+	}else if(request.message == "delete_keys"){			//delete keys in memory
 		masterPwd = '';
 		KeyStr = '';
 		KeySgn = '';
@@ -174,7 +152,7 @@ chrome.runtime.onMessage.addListener(
 				}
 			}
 
-		}else{							//send PL keys to background
+		}else{							//send PL keys to session storage
 			preserveKeys()
 		}
 
@@ -270,22 +248,56 @@ function retrieveMyEmail(loc){
 
 function preserveMaster(){
 	if(masterPwd){
-		chrome.runtime.sendMessage({message: "preserve_master", masterPwd: masterPwd})
+//		chrome.runtime.sendMessage({message: "preserve_master", masterPwd: masterPwd});
+		chrome.storage.session.set({"masterPwd": masterPwd});
+		chrome.alarms.create("PLUAlarm",						//to delete all in session storage after 5 minutes
+			{"delayInMinutes": 5}
+		);
 	}
 }
 
 function preserveKeys(){
 	if(KeyStr){
-		chrome.runtime.sendMessage({message: 'preserve_keys', KeyStr: KeyStr, myKey: myKey, myEmail: myEmail, myLockbin: myLockbin, myLock: myLock, myezLock: myezLock, locDir: locDir, prevWebsiteName: prevWebsiteName});
+//		chrome.runtime.sendMessage({message: 'preserve_keys', KeyStr: KeyStr, myKey: myKey, myEmail: myEmail, myLockbin: myLockbin, myLock: myLock, myezLock: myezLock, locDir: locDir, prevWebsiteName: prevWebsiteName});
+		chrome.storage.session.set({"KeyStr": KeyStr});
+		chrome.storage.session.set({"myKey": JSON.stringify(Array.from(myKey))});
+		chrome.storage.session.set({"myEmail": myEmail});
+		chrome.storage.session.set({"myLockbin": JSON.stringify(Array.from(myLockbin))});
+		chrome.storage.session.set({"myLock": myLock});
+		chrome.storage.session.set({"myezLock": myezLock});
+		chrome.storage.session.set({"locDir": JSON.stringify(locDir)});
+		chrome.storage.session.set({"prevWebsiteName": prevWebsiteName});
+		chrome.alarms.create("PLUAlarm",
+			{"delayInMinutes": 5}
+		);
 	}
 }
 
 function retrieveMaster(){
-	chrome.runtime.sendMessage({message: 'retrieve_master'})
+	let gettingPwd = chrome.storage.session.get("masterPwd");
+	gettingPwd.then(function(result){
+		if(result["masterPwd"]){
+			masterPwd = result["masterPwd"];
+			masterPwd1Box.value = masterPwd;
+			masterPwd1Icon.style.display = 'none'
+		}
+	})
 }
 
 function retrieveKeys(){
-	chrome.runtime.sendMessage({message: 'retrieve_keys'})
+	let gettingKeys = chrome.storage.session.get();
+	gettingKeys.then(function(result){
+		if(result["KeyStr"]) KeyStr = result["KeyStr"];
+		if(result["myLock"]) myLock = result["myLock"];
+		if(result["myezLock"]) myezLock = result["myezLock"];
+		if(result["myEmail"]) myEmail = result["myEmail"];
+		if(result["prevWebsiteName"]) prevWebsiteName = result["prevWebsiteName"];
+		if(result["locDir"]) locDir = JSON.parse(result["locDir"]);
+		if(result["myKey"]) myKey = new Uint8Array(JSON.parse(result["myKey"]));
+		if(result["myLockbin"]) myLockbin = new Uint8Array(JSON.parse(result["myLockbin"]))
+	})
+
+	if(callKey) doAction
 }
 
 function nameFromURL(websiteURL){
@@ -304,7 +316,7 @@ function nameFromURL(websiteURL){
 	}
 }
 
-//now that the receiving code is in place, begin by retrieving data stored in background page
+//now that the receiving code is in place, begin by retrieving data in session storage
 retrieveMaster();
 retrieveKeys();
 
