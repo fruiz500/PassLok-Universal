@@ -207,6 +207,10 @@ function doAction(){
 	}else if(callKey == 'showLock'){
 		openScreen('readScr');
 		showLock()
+	}else{
+		callKey = 'compose';
+		updateComposeButtons();
+		openScreen('composeScr')
 	}
 }
 
@@ -248,7 +252,8 @@ function acceptpwd(){
 	if(!locDir['myself']) locDir['myself'] = [];
 	locDir['myself'][0] = myLock;
 	locDir['myself'][1] = myEmail;
-	storeData('myself');
+	storeData('myself');								//store in sync storage
+	preserveKeys();										//store also in session storage
 		
 	firstTimeUser = false;
 	firstTimeKey.style.display = 'none';

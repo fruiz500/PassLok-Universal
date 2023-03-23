@@ -11,7 +11,11 @@ chrome.runtime.onMessage.addListener(
 		var passwords = request.passwords;
 		if(passwords){
 			for(var i = 0; i < passwords.length; i++){
-				pwdId[i].value = passwords[i]
+				pwdId[i].value = passwords[i];
+				var inputEvent = new Event('input');
+				pwdId[i].dispatchEvent(inputEvent);				//to simulate actual typing
+				var keyupEvent = new Event('keyup');
+				pwdId[i].dispatchEvent(keyupEvent)
 			}
 		}
 		if(request.userID){
@@ -46,6 +50,9 @@ chrome.runtime.onMessage.addListener(
 
 		//tell the popup it can close
 	  chrome.runtime.sendMessage({message: "done"})
+	  
+	}else if(request.message == "send_data"){						//data requested from a script already loaded
+		sendData()
 	}
   }
 )
@@ -113,51 +120,57 @@ function getSelectedNode(){
     }
 }
 
-//for password function, find passsword fields and others, for reading encrypted material, find stuff between == markers
-pwdId = [];										//global variables  that will be used later
-textId = [];
-visibleEditable = [];
+//the rest executes upon loading or per request
+function sendData(){
+	//for password function, find passsword fields and others, for reading encrypted material, find stuff between == markers
+	window.pwdId = [];										//global variables  that will be used later
+	window.textId = [];
+	window.visibleEditable = [];
 
-var inputElements = document.querySelectorAll("input"),
-	userDone = false;
+	var inputElements = document.querySelectorAll("input"),
+		userDone = false;
 
-for(var i = 0; i < inputElements.length; i++){		//this is to avoid counting boxes that are on the page but not visible
-	if(isVisible(inputElements[i])){
-		if(inputElements[i].type == 'password'){
-			pwdId.push(inputElements[i])
-			if(i > 0){								//detect single text or email input immediately before, skipping hidden inputs
-				if(!userDone){
-					var j = 1;
-					while(!isVisible(inputElements[i-j]) && j < i)
-					j++;
-					if(inputElements[i-j].type == 'text' || inputElements[i-j].type == 'email'){
-						textId = [inputElements[i-j]];
-						userDone = true
+	for(var i = 0; i < inputElements.length; i++){		//this is to avoid counting boxes that are on the page but not visible
+		if(isVisible(inputElements[i])){
+			if(inputElements[i].type == 'password'){
+				pwdId.push(inputElements[i])
+				if(i > 0){								//detect single text or email input immediately before, skipping hidden inputs
+					if(!userDone){
+						var j = 1;
+						while(!isVisible(inputElements[i-j]) && j < i)
+						j++;
+						if(inputElements[i-j].type == 'text' || inputElements[i-j].type == 'email'){
+							textId = [inputElements[i-j]];
+							userDone = true
+						}
 					}
 				}
 			}
 		}
 	}
-}
-	
-var editableElements = document.querySelectorAll('[contenteditable=true], textarea');    //to find large input boxes where to send encrypted stuff
-for(var i = 0; i < editableElements.length; i++){									//keep only visible elements
-	if(isVisible(editableElements[i])){
-		visibleEditable.push(editableElements[i]);
-		if(editableElements[i].tagName.toLowerCase() == 'textarea'){			//empty out the box, so encrypted data is added only once
-			editableElements[i].value = ''
-		}else{
-			editableElements[i].textContent = ''
+		
+	var editableElements = document.querySelectorAll('[contenteditable=true], textarea');    //to find large input boxes where to send encrypted stuff
+	for(var i = 0; i < editableElements.length; i++){									//keep only visible elements
+		if(isVisible(editableElements[i])){
+			visibleEditable.push(editableElements[i]);
+			if(editableElements[i].tagName.toLowerCase() == 'textarea'){			//empty out the box, so encrypted data is added only once
+				editableElements[i].value = ''
+			}else{
+				editableElements[i].textContent = ''
+			}
 		}
 	}
+
+	var PLstuff = [getSelectionText()];						//selected text, otherwise base64 between "==" markers
+	if(!PLstuff[0]){
+		PLstuff = getPLstuff(document.body.innerText)		//innerText so it's only visible	 (doesn't work well with Yahoo)
+	}else{
+		pwdId = []										//ignore password boxes if a text is selected
+	}
+
+	//send data to the popup
+	chrome.runtime.sendMessage({message: "start_info", host: document.location.host, websiteURL: document.location.href, number: pwdId.length, isUserId: userDone, PLstuff: PLstuff, largeInputs: visibleEditable.length})
 }
 
-var PLstuff = [getSelectionText()];						//selected text, otherwise base64 between "==" markers
-if(!PLstuff[0]){
-	PLstuff = getPLstuff(document.body.innerText)		//innerText so it's only visible	 (doesn't work well with Yahoo)
-}else{
-	pwdId = []										//ignore password boxes if a text is selected
-}
-
-//send data to the popup
-chrome.runtime.sendMessage({message: "start_info", host: document.location.host, websiteURL: document.location.href, number: pwdId.length, isUserId: userDone, PLstuff: PLstuff, largeInputs: visibleEditable.length})
+//send data the fist time it loads
+sendData()

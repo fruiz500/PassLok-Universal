@@ -12,7 +12,9 @@ a:hover {
 }
 select {
 	-webkit-appearance: button;
+	appearance: button;
 	-webkit-user-select: none;
+	user-select: none;
 	margin: 0;
 	border: 1px solid #dedede;
 	color: #666666;
@@ -57,6 +59,7 @@ img.intLink {
   	text-decoration: none;
 	width: 99.4%;
 	-webkit-appearance: none;
+	appearance: none;
 	box-sizing: border-box;
    	 -webkit-box-sizing:border-box;
 	-webkit-box-shadow: none;
@@ -75,6 +78,12 @@ img.intLink {
 .message {
 	white-space: pre-line;
 	height: 40px;
+}
+.centered {
+	text-align: center;
+}
+.left {
+	text-align: left;
 }
 .field-icon {
   margin-left: -30px;
@@ -165,7 +174,6 @@ opacity: 0;
 	border-top-left-radius: 0;
 	border-top-right-radius: 0;
 	padding: 15px;
-	nonce: 'EDNnf03nceIOfn39fn3e9h3sdfa';
 }
 #toolBar1 {
 	padding-top: 1px;

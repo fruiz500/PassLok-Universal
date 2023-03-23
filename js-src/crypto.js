@@ -177,6 +177,8 @@ function encryptList(listArray,isFileOut,isImageOut){
 	if(encryptArray.length == 0 && listArray.indexOf(myEmail) == -1){
 		composeMsg.textContent = 'None of these recipients are in your directory. You should send them an invitation first.';
 		return
+	}else{
+		composeMsg.textContent = 'Welcome to PassLok'
 	}
 	if(!onceMode.checked) encryptArray.push(myEmail);				//copy to myself unless read-once
 	encryptArray = shuffle(encryptArray);							//extra precaution
@@ -323,14 +325,15 @@ function encryptList(listArray,isFileOut,isImageOut){
 
 	//finish off by adding the encrypted message and tags
 	outString += nacl.util.encodeBase64(concatUint8Arrays(outArray,cipher)).replace(/=+$/,'');
-	finishEncrypt(outString,isFileOut,isImageOut,(!symMode.checked && inviteArray.length != 0),encryptArray.length)			//see if invitations would have been needed
+	finishEncrypt(outString,isFileOut,isImageOut,inviteArray,encryptArray.length)			//see if invitations would have been needed
 }
 
 //output formatting, which is shared by symmetric encryption modes
-function finishEncrypt(outString,isFileOut,isImageOut,invitesNeeded,recipientNumber){
+function finishEncrypt(outString,isFileOut,isImageOut,inviteArray,recipientNumber){
 	var outNode = document.createElement('div');	
 	outNode.style.whiteSpace = "pre-line";									//so that carriage returns are respected
 	outNode.id = "composeOut";
+	var invitesNeeded = !symMode.checked && (inviteArray.length != 0);
 	
 if(!isImageOut){																//normal output, not to image
 	if(stegoMode.checked){
@@ -417,7 +420,8 @@ if(!isImageOut){																//normal output, not to image
 	if(isFileOut){
 		composeMsg.textContent = "Contents encrypted into a file. Now save it, close this dialog, and attach the file to your email";
 		composeBox.textContent = '';
-		composeBox.appendChild(outNode)
+		composeBox.appendChild(outNode);
+		openScreen('composeScr')
 
 	}else if(isImageOut){
 		composeBox.textContent = '';
@@ -436,7 +440,9 @@ if(!isImageOut){																//normal output, not to image
 	}
 	callKey = '';
 	if(invitesNeeded){
-		composeMsg.textContent = 'The following recipients have been removed from your encrypted message because they are not yet in your directory:\n' + inviteArray.join(', ') + '\nYou should send them an invitation first. You may close this dialog now';
+		composeMsg.textContent = 'These recipients will not be able to decrypt your message because they are not yet in your directory:\n' + inviteArray.join(', ') + '\nYou should send them an invitation first. You may close this dialog now';
+		composeBox.textContent = '';
+		openScreen('composeScr')
 	}else if(!isFileOut && !isImageOut){
 		 	setTimeout(function(){window.close()},200)		//close after a delay, to make sure the command arrives
 	}

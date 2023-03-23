@@ -14,7 +14,15 @@ chrome.runtime.onMessage.addListener(
 chrome.alarms.onAlarm.addListener(function(result){
 	if(result.name == "PLUAlarm"){
 		chrome.storage.session.clear();
-		chrome.runtime.sendMessage({message: "delete_keys"})
+		chrome.runtime.sendMessage({message: "delete_keys"}, function(response) {
+			var lastError = chrome.runtime.lastError;
+			if (lastError) {
+				console.log(lastError.message);
+				// 'Could not establish connection. Receiving end does not exist.'
+				return;
+			}
+			// Success, do something with response...
+		})
 	}
 });
 

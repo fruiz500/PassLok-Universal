@@ -203,12 +203,17 @@ window.onload = function() {
 //collect data from content script. Also triggers initialization
 	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
     	activeTab = tabs[0];
-	
-//load content script programmatically (needs activeTab permission)
-		chrome.scripting.executeScript({
-			target: {tabId: activeTab.id, allFrames: true},
-			files: ["/js-src/content.js"]
-		});
+		//load content script programmatically (needs activeTab permission)
+		chrome.tabs.sendMessage(activeTab.id, {message: "send_data"}, function(response) {
+			var lastError = chrome.runtime.lastError;
+			if (lastError && lastError.message.includes("does not exist")) {								//no receiving end, so inject the script instead
+				chrome.scripting.executeScript({
+					target: {tabId: activeTab.id, allFrames: true},
+					files: ["/js-src/content.js"]
+				});
+				return;
+			}
+		})
 
 		if(activeTab.url){								//the rest in case there's no meaningful reply from the content script
 			websiteURL = activeTab.url;

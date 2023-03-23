@@ -289,6 +289,8 @@ function loadFile(){
 		}else{
 			composeBox.innerHTML += '<br><a download="' + escapedName + '" href="' + decryptSanitizer(URLFromFileLoaded) + '">' + escapedName + '</a>'
 		}
+		mainFile.type = '';
+        mainFile.type = 'file'            //reset file input
 	}
 	if(fileToLoad.type.slice(0,4) == "text"){
 		fileReader.readAsText(fileToLoad, "UTF-8");
@@ -309,7 +311,9 @@ function loadImage(){
 			composeMsg.textContent = 'This file is not a recognized image type';
 			return
 		}
-		composeBox.innerHTML += decryptSanitizer('<img src="' + URLFromFileLoaded.replace(/=+$/,'') + '">')
+		composeBox.innerHTML += decryptSanitizer('<img src="' + URLFromFileLoaded.replace(/=+$/,'') + '">');
+		imgFile.type = '';
+        imgFile.type = 'file'            //reset file input
 	};
 	fileReader.readAsDataURL(fileToLoad, "UTF-8")
 }
@@ -349,6 +353,8 @@ function loadEncryptedFile(){
 			text2decrypt = URLFromFileLoaded;									//text case
 			decrypt()
 		}
+		loadEncrFile.type = '';
+        loadEncrFileFile.type = 'file'            //reset file input
 	}
 	if(fileToLoad.type.slice(0,4) == "text"){
 		fileReader.readAsText(fileToLoad, "UTF-8")

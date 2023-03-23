@@ -52,6 +52,7 @@ body {
   	text-decoration: none;
 	width: 99.4%;
 	-webkit-appearance: none;
+	appearance: none;
 	box-sizing: border-box;
    	 -webkit-box-sizing:border-box;
 	-webkit-box-shadow: none;
@@ -67,6 +68,9 @@ body {
     outline: none;
     border:1px solid #00CA68;
     box-shadow: 0 0 10px #719ECE;
+}
+.centered {
+	text-align: center;
 }
 .message {
 	white-space: pre-line;

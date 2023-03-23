@@ -10,7 +10,7 @@
 <script src="../js-src/license.js"></script>
 
 <!--TweetNaCl crypto library 1.0.3 by Dmitry Chestnykh. https://github.com/dchest/tweetnacl-js-->
-<script src="../js-lib/nacl.js"></script>
+<script src="../js-lib/nacl-fast.js"></script>
 
 <!--ed2curve-js conversion of curve coordinates 0.2.1 by Dmitry Chestnykh. https://github.com/dchest/ed2curve-js-->
 <script src="../js-lib/ed2curve.js"></script>
@@ -21,7 +21,7 @@
 <!--lz-string compression algorithm 1.4.4. https://github.com/pieroxy/lz-string-->
 <script src="../js-lib/lz-string.js"></script>
 
-<!--DOMPurify, used to sanitize decrypted material before putting in DOM v2.4.0. https://github.com/cure53/DOMPurify-->
+<!--DOMPurify, used to sanitize decrypted material before putting in DOM v3.0.1. https://github.com/cure53/DOMPurify-->
 <script src="../js-lib/purify.js"></script>
 
 <!--jpeg image steganography by Owen Campbell-Moore and others. https://github.com/owencm/js-steg. First jsstegencoder-1.0.js-->
@@ -73,8 +73,8 @@
 
 <!--read screen-->
 <div class="screen" id="readScr">
-	<div id="readMsg" class="message" align="center"><p><span>Welcome to PassLok</span></p></div><br>
-	<div id="readButtons" align="center">
+	<div id="readMsg" class="message centered"><p><span>Welcome to PassLok</span></p></div><br>
+	<div id="readButtons" class="centered">
 		<button class="cssbutton" id="readHelpBtn" value="Help" title="open Help in a new tab">Help</button>
 		<span id="moreReadButtons">&nbsp;&nbsp;
 			<label for="loadEncrFile" id="decryptFileBtn" title="open dialog to load an encrypted file or image"><span class="cssbutton">Decrypt file / image</span></label>&nbsp;&nbsp;
@@ -94,8 +94,8 @@
 
 <!--compose screen-->
 <div class="screen" id="composeScr">
-	<div id="composeMsg" class="message" align="center"><p><span>Welcome to PassLok</span></p></div><br>
-	<div id="composeButtons" align="center">
+	<div id="composeMsg" class="message centered"><p><span>Welcome to PassLok</span></p></div><br>
+	<div id="composeButtons" class="centered">
 		<button class="cssbutton" id="encryptBtn" value="" title="encrypt contents using the mode selected below">Encrypt to email</button>&nbsp;&nbsp;
 		<span id="moreComposeButtons">
 			<button class="cssbutton" id="encryptFileBtn" value="" title="encrypt contents to file using the mode selected below">Encrypt to file</button>&nbsp;&nbsp;
@@ -215,7 +215,7 @@
 	</div>
   </div>
      <div id="composeBox" class="cssbox" contenteditable="true"></div>
-	<div id="checkBoxes" align="center">
+	<div id="checkBoxes" class="centered">
 		<br>
 		<input type="radio" name="lockmodes" id="signedMode" title="the message can be decrypted multiple times" checked/>&nbsp; Signed &nbsp;
    		<input type="radio" name="lockmodes" id="onceMode" title="the message can be decrypted only once"/>&nbsp; Read-once&nbsp;
@@ -236,7 +236,7 @@
 
 <!--key screen	-->
 <div class="screen" id="pwdScr">
-	<div id="firstTimeKey" align="left">
+	<div id="firstTimeKey" class="left">
 		<h3>Welcome to PassLok Universal</h3>
 		<p>Before you do anything else, you must enter your address for this service and choose a secret Password, which you will memorize and <strong>will not tell anyone</strong>, and click <strong>OK</strong>.</p>
 		<p>Its measured strength will appear above it as you begin to type. If it is worse than Medium, <em>things will be very slow.</em></p>
@@ -244,17 +244,17 @@
 		<p>The <strong>Suggest</strong> button will get you started with five words, which you can modify at will.</p>
 		<p>Your Password will not be stored or sent anywhere.</p>
        <p>For extensive help on this app, click the Help button.</p>
-		<div align="center">
+		<div class="centered">
 			<button class="cssbutton" id="suggestPwdBtn" value="Suggest" title="suggest a Password made of five common words">Suggest</button>&nbsp;&nbsp;
            <button class="cssbutton" id="keyHelpBtn" value="Help" title="open Help in a new tab">Help</button><br></div><br>
 		</div>
-	<div id="pwdMsg" class="message" align="center">Welcome to PassLok Universal<br>Please check that your email address is correct and enter your Password below</div>
+	<div id="pwdMsg" class="message centered">Welcome to PassLok Universal<br>Please check that your email address is correct and enter your Password below</div>
     <br>
-    <input type="text" class="cssbox" autocomplete="off" id="myEmailBox" name="text" placeholder="Email address" title="this should be your email address, or your name for Outlook online" align="center"><br><br>
-	<input type="password" class="cssbox" autocomplete="off" id="pwdBox" name="text" placeholder="Enter your Password here" title="enter your Password here" align="center">
+    <input type="text" class="cssbox centered" autocomplete="off" id="myEmailBox" name="text" placeholder="Email address" title="this should be your email address, or your name for Outlook online"><br><br>
+	<input type="password" class="cssbox centered" autocomplete="off" id="pwdBox" name="text" placeholder="Enter your Password here" title="enter your Password here">
 	<img id="pwdIcon" class="field-icon" src='../img/eyeImg.png' title="click this to see/hide the Password">
 	<br><br><br><br>
-	<div align="center">
+	<div class="centered">
 		<button class="cssbutton" id="acceptPwdBtn" value="OK" title="accept Password">OK</button>
 	</div><br>
 	<span id="fiveMin"><p>You will need to re-enter your Password if you do not use it for 5 minutes or reload your email app</p></span>
@@ -262,11 +262,11 @@
 
 <!--old key dialog-->
 <div class="screen" id="oldPwdScr">
-	<div id="oldPwdMsg" class="message" align="center">Looks like you may have changed your Password recently. If you want to continue this conversation, please write the previous Password in the box below and click <strong>OK</strong><br>This may also have popped because you tried to decrypt a Read-once message for the 2nd time</div><br>
-	<input type="password" class="cssbox" id="oldPwdBox" name="oldPwd" placeholder="Enter the previous Password here." align="center">
+	<div id="oldPwdMsg" class="message centered">Looks like you may have changed your Password recently. If you want to continue this conversation, please write the previous Password in the box below and click <strong>OK</strong><br>This may also have popped because you tried to decrypt a Read-once message for the 2nd time</div><br>
+	<input type="password" class="cssbox centered" id="oldPwdBox" name="oldPwd" placeholder="Enter the previous Password here.">
 	<img id="oldPwdIcon" class="field-icon" src='../img/eyeImg.png' title="click this to see/hide the Password">
 	<br><br>
-	<div align="center">
+	<div class="centered">
 		<button class="cssbutton" id="acceptOldPwdBtn" value="OK" title="accept old Password">OK</button>&nbsp;&nbsp;
        <button class="cssbutton" id="cancelOldPwdBtn" value="Cancel" title="cancel old Password">Cancel</button>
 	</div>
@@ -274,8 +274,8 @@
 
 <!--change name dialog-->
 <div class="screen" id="nameScr">
-	<div id="nameMsg" class="message" align="center" width="30">The message has been encrypted with a new Password. Please select a known sender on the list, or type the sender's name in the box below, then click <strong>OK</strong> to accept it from now on</div><br>
-	<div align="center">
+	<div id="nameMsg" class="message centered" width="30">The message has been encrypted with a new Password. Please select a known sender on the list, or type the sender's name in the box below, then click <strong>OK</strong> to accept it from now on</div><br>
+	<div class="centered">
     	<select class="cssbox" id='lockList2' size='4' title="click to select Ctrl-click to deselect">
     	<option value="" disabled selected>Select sender:</option>
     </select><br><br>
@@ -289,15 +289,15 @@
 <!--make chat dialog-->
 <div class="screen "id="chatScr">
 	<span id="chatMsg" class="message">Choose the type of chat, then optionally write in the box a message including the date and time</span><br><br>
-	<div align="center">
-		<input type="radio" name="chatmodes" id="dataChat"  title="chat with text messages and file exchange" checked/>&nbsp; Text and files&nbsp;&nbsp;
+	<div class="centered">
+		<input type="radio" name="chatmodes" id="dataChat"  title="chat with text messages and file exchange"/>&nbsp; Text and files&nbsp;&nbsp;
 		<input type="radio" name="chatmodes" id="audioChat" title="like Text chat, plus audio"/>&nbsp; Audio&nbsp;&nbsp;
 		<input type="radio" name="chatmodes" id="videoChat" title="like audio chat, plus video"/>&nbsp; Video&nbsp;&nbsp;
-  		<input type="radio" name="chatmodes" id="jitsiChat" title="full featured, on jit.si"/>&nbsp; Jitsi
+  		<input type="radio" name="chatmodes" id="jitsiChat" title="full featured, on jit.si" checked/>&nbsp; Jitsi
         <br><br>
 	</div>
 	<textarea id="chatDate" class="cssbox" name="chatDate" rows="1" title="additional information" placeholder="Write here the date and time for the chat"></textarea><br><br>
-	<div align="center">
+	<div class="centered">
 		<button class="cssbutton" id="makeChatBtn" value="OK" title="make chat invitation">OK</button>&nbsp;&nbsp;
         <button class="cssbutton" id="cancelChatBtn" value="Cancel" title="cancel chat invitation">Cancel</button>
 	</div>
@@ -305,8 +305,8 @@
 
 <!--accept chat dialog-->
 <div class="screen" id="acceptChatScr">
-	<div id="chatMsg2" class="message" align="center"></div><br><br>
-	<div align="center">
+	<div id="chatMsg2" class="message centered"></div><br><br>
+	<div class="centered">
 		<button class="cssbutton" id="acceptChatBtn" value="OK" title="start chat">OK</button>&nbsp;&nbsp;
         <button class="cssbutton" id="cancelChat2Btn" value="Cancel" title="cancel chat">Cancel</button>
 	</div>
@@ -314,15 +314,15 @@
 
 <!--Cover text entry dialog-->
 <div class="screen" id="coverScr">
-	<div align="center"> <span id="coverMsg" class="message">Please enter the cover text for hiding and click <strong>OK</strong></span><br><br>
-    	<textarea class="cssbox" rows="5" autocomplete="off" id="coverBox" placeholder="Enter the cover text here." align="center"></textarea><br><br>
+	<div class="centered"> <span id="coverMsg" class="message">Please enter the cover text for hiding and click <strong>OK</strong></span><br><br>
+    	<textarea class="cssbox centered" rows="5" autocomplete="off" id="coverBox" placeholder="Enter the cover text here."></textarea><br><br>
 		<button class="cssbutton" id="acceptCoverBtn" value="OK" title="accept cover text">OK</button>&nbsp;&nbsp;
         <button class="cssbutton" id="cancelCoverBtn" value="cancel" title="close cover text dialog">Cancel</button>
 	</div>
 </div>
 
 <!--Decoy message entry-->
-<div class="screen" id="decoyInScr" align="center">
+<div class="screen centered" id="decoyInScr">
 	<p id="decoyMsg" class="message">Enter the Hidden Message</p>
 	<textarea id="decoyText" class="cssbox" name="text" rows="3"></textarea>
 	<p id="decoyInMsg" class="message">Enter the shared Key or Lock for the Hidden message</p>
@@ -334,7 +334,7 @@
 </div>
 
 <!--Decoy message retrieval-->
-<div class="screen" id="decoyOutScr" align="center">
+<div class="screen centered" id="decoyOutScr">
 	<p id="decoyOutMsg" class="message">Enter the Key for the Hidden message</p>
 	<input type="password" class="cssbox" id="decoyOutBox" name="key"/>
 	<img id="decoyOutIcon" class="field-icon" src='../img/eyeImg.png' title="click this to see/hide the Password">
@@ -345,7 +345,7 @@
 </div>
 
 <!--Image steganography screen-->
-<div class="screen" id="stegoImageScr" align="center">
+<div class="screen centered" id="stegoImageScr">
 	<div id="stegoImageMsg" class="message"></div><br>
 	<input type="password" class="cssbox" id="stegoImageBox" title="use a password for better undetectability" placeholder=" optional Password"/>
     <img id="stegoImageIcon" class="field-icon" src='../img/eyeImg.png' title="click this to see/hide the Password"><br><br>
@@ -356,7 +356,7 @@
 </div>
 
 <!--symmetric key input-->
-<div class="screen" id="symmetricScr" align="center">
+<div class="screen centered" id="symmetricScr">
 	<p id="symmetricMsg" class="message">Enter the shared Password</p>
 	<input type="password" class="cssbox" id="symmetricBox" name="key"/>
 	<img id="symmetricIcon" class="field-icon" src='../img/eyeImg.png' title="click this to see/hide the Password">
@@ -371,7 +371,7 @@
 <h3 id="synthTitle">Fill passwords</h3>
 <div id="masterPwdMsg" class="message" title="messages appear here"><span id="failMsg">There's no secure note for this website, but you can write one in the box.<br>click me for user ID</span></div>
 <br>
-<div id="memoArea" align="center">
+<div id="memoArea" class="centered">
 <button class="cssbutton" id="cageBtn" title="isolates the page from cookies etc.">Isolate Page</button>
 <br><br>
 <textarea id="memoBox" rows="5" class="cssbox" placeholder="Write your notes here. They will be stored securely."></textarea></div>
@@ -398,7 +398,7 @@
 <td width="75%">
 <input type="password" class="cssbox" id="masterPwd1Box" title="type Master Password here" placeholder="password here"/><img id="masterPwd1Icon" class="field-icon" src="../img/eyeImg.png" title="click this to see/hide the Password">
 </td>
-<td width="5%" align="center">
+<td width="5%" class="centered">
 </td>
 <td width="20%">
 <input type="text" class="cssbox" id="serial1" title="add optional serial"/>
@@ -408,7 +408,7 @@
 <td width="75%">
 <input type="password" class="cssbox" id="masterPwd2Box" title="type Master Password here" placeholder="password here"/><img id="masterPwd2Icon" class="field-icon" src="../img/eyeImg.png" title="click this to see/hide the Password">
 </td>
-<td width="5%" align="center">
+<td width="5%" class="centered">
 </td>
 <td width="20%">
 <input type="text" class="cssbox" id="serial2" title="add optional serial"/>
@@ -418,7 +418,7 @@
 <td width="75%">
 <input type="password" class="cssbox" id="masterPwd3Box" title="type Master Password here" placeholder="password here"/><img id="masterPwd3Icon" class="field-icon" src="../img/eyeImg.png" title="click this to see/hide the Password">
 </td>
-<td width="5%" align="center">
+<td width="5%" class="centered">
 </td>
 <td width="20%">
 <input type="text" class="cssbox" id="serial3" title="add optional serial"/>
@@ -428,7 +428,7 @@
 <td width="75%">
 <input type="password" class="cssbox" id="masterPwd4Box" title="type Master Password here" placeholder="password here"/><img id="masterPwd4Icon" class="field-icon" src="../img/eyeImg.png" title="click this to see/hide the Password">
 </td>
-<td width="5%" align="center">
+<td width="5%" class="centered">
 </td>
 <td width="20%">
 <input type="text" class="cssbox" id="serial4" title="add optional serial"/>
@@ -436,7 +436,7 @@
 </tr>
 </table>
 <br><br>
-<div align="center">
+<div class="centered">
   &nbsp;
 <button class="cssbutton" id="okSynthBtn" value="OK" title="OK (alt-O)" accesskey="o">OK</button>
   &nbsp;
@@ -450,7 +450,7 @@
  </div>
 
 <!--extra master Password input-->
-<div class="screen" id="extraMasterScr" align="center">
+<div class="screen" id="extraMasterScr">
 	<p id="extraMasterMsg" class="message">Enter the master Password to save this note securely<br>If empty, it will be saved in plaintext</p>
 	<input type="password" class="cssbox" id="extraMasterBox" name="key"/>
 	<img id="extraMasterIcon" class="field-icon" src='../img/eyeImg.png' title="click this to see/hide the Password">
