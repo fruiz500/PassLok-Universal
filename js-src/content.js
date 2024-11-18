@@ -168,7 +168,7 @@ function sendData(){
 		pwdId = []										//ignore password boxes if a text is selected
 	}
 
-	//send data to the popup
+	//send data to the popup; some origins may be iframes with no host mentioned
 	chrome.runtime.sendMessage({message: "start_info", host: document.location.host, websiteURL: document.location.href, number: pwdId.length, isUserId: userDone, PLstuff: PLstuff, largeInputs: visibleEditable.length})
 }
 
