@@ -29,7 +29,7 @@ function resetKeys(){
 	myezLock = '';
 	pwdMsg.textContent = 'Your Password has expired. Please enter it again';
 	pwdMsg.style.color = '';
-	chrome.runtime.sendMessage({message: 'reset_now'})		//also reset in background page
+	chrome.runtime.sendMessage({message: 'delete_keys'})		//also reset in background page
 }
 
 //reads Key and stops if there's something wrong. If the timer has run out, the Key is deleted from box, and stretched keys are deleted from memory

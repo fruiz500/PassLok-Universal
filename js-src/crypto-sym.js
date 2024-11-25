@@ -9,7 +9,7 @@ function symmetricEncrypt(text,isFileOut,isImageOut){
 	if(sharedPwd.length*entropyPerChar > (composeBox.textContent.length + 64) * 8 && sharedPwd.length > 43){		//special mode for long keys, first cut
 		padEncrypt(composeBox.textContent,isFileOut,isImageOut);
 		return
-	}else if(sharedPwd.split('~').length == 3){									//human mode: key is three strings separated by tildes: human-computable encryption
+	}else if(sharedPwd.split('~').length == 4 || sharedPwd.split('~').length == 5){		//human mode: key is four strings separated by tildes: human-computable encryption
 		humanEncrypt(composeBox.textContent,true,isFileOut,isImageOut);
 		return
 	}	
@@ -20,7 +20,7 @@ function symmetricEncrypt(text,isFileOut,isImageOut){
 	var sharedKey = wiseHash(sharedPwd,nonceStr);		//use the nonce for stretching the user-supplied Key
 
 	var cipher = symEncrypt(text,nonce24,sharedKey,true),		//true because compression is used
-		outStr = nacl.util.encodeBase64(concatUint8Arrays([128],concatUint8Arrays(nonce,cipher))).replace(/=+$/,'');
+		outStr = nacl.util.encodeBase64(concatUi8([[128],nonce,cipher])).replace(/=+$/,'');
 		
 	finishEncrypt(outStr,isFileOut,isImageOut,false)
 }
@@ -41,8 +41,8 @@ function symmetricDecrypt(cipherStr){
 	}
 	
 	if(!cipherStr.match(/[^A-Z ]/)){													//only base26 plus maybe codegroup spacing: special human encrypted mode
-		if(sharedPwd.split('~').length != 3){
-			readMsg.textContent = 'Please supply a correct Key for human decryption: three strings separated by tildes';
+		if(sharedPwd.split('~').length != 4 && sharedPwd.split('~').length != 5){
+			readMsg.textContent = 'Please supply a correct Key for human decryption: four strings separated by tildes, plus maybe a numeral';
 			return
 		}
 		humanEncrypt(cipherStr,false,false,false);									//when set to false the process decrypts
@@ -103,7 +103,7 @@ function padEncrypt(text,isFileOut,isImageOut){
 
 	var cipherBin = padResult(textBin, keyTextBin, nonce, startIndex),				//main encryption event
 		macBin = padMac(textBin, keyTextBin, nonce, startIndex),						//make mac
-		outStr = nacl.util.encodeBase64(concatUint8Arrays([116],concatUint8Arrays(nonce,concatUint8Arrays(macBin,cipherBin)))).replace(/=+$/,'');
+		outStr = nacl.util.encodeBase64(concatUi8([[116],nonce,macBin,cipherBin])).replace(/=+$/,'');
 	
 	finishEncrypt(outStr,isFileOut,isImageOut,false)
 }
@@ -328,98 +328,123 @@ String.prototype.removeDiacritics = function() {
 
 //processes plaintext or ciphertext and does encryption (decryption if isEncrypt = false)
 function humanEncrypt(text,isEncrypt,isFileOut,isImageOut){
-	text = text.replace(/(<br>|<div>)/g,' ').replace(/<(.*?)>/g,'');																		//no tags allowed. pure text
-	if(text.trim() == '') return;
-	
-	//text preparation. If encrypting, convert Qs into Ks and then spaces into Qs. Punctuation other than commas into QQ
-	if(isEncrypt){
-		text = text.replace(/[0-9]/g,function(match){return base26.charAt(match);}).trim();						//replace numbers with letters
-		text = text.toUpperCase().removeDiacritics();																//remove accents and make upper case
-		text = text.replace(/Q/g,'K').replace(/[.;:!?{}_()\[\]…—–―\-\s\n]/g,'Q').replace(/Q+$/,'')				//turn Q into K, spaces and punctuation into Q
-	}
-	text = text.replace(/[^A-Z]/g,'');																				//only base26 anyway
+    text = text.replace(/(<br>|<div>)/g,' ').replace(/<(.*?)>/g,'');																		//no tags allowed. pure text
+    if(text.trim() == '') return;
 
-	var rawKeys = sharedPwd.split('~');
-	for(var i = 0; i < 3; i++) rawKeys[i] = rawKeys[i].toUpperCase().removeDiacritics().replace(/[^A-Z]/g,'');	//remove accents, spaces, and all punctuation
+    //text preparation. If encrypting, convert Qs into Ks and then spaces into Qs. Punctuation other than commas into QQ
+    if(isEncrypt){
+        text = text.replace(/[0-9]/g,function(match){return base26.charAt(match);}).trim();			//replace numbers with letters
+        text = text.toUpperCase().removeDiacritics();							//remove accents and make upper case
+        text = text.replace(/Q/g,'K').replace(/[.;:!?{}_()\[\]…—–―\-\s\n]/g,'Q').replace(/Q+$/,'')		//turn Q into K, spaces and punctuation into Q
+        text = text.replace(/[^A-Z]/g,'');
 
-	var	base26B1arrays = makeAlphabet(compressKey(rawKeys[0],25)),
-		base26B2arrays = makeAlphabet(compressKey(rawKeys[1],25)),
-		base26BArray1 = base26B1arrays[0],
-		base26BArray2 = base26B2arrays[0],
-		base26Binverse1 = base26B1arrays[1],
-		base26Binverse2 = base26B2arrays[1],
-		seed = rawKeys[2] ? rawKeys[2] : rawKeys[0];			//if seed is empty, use key 1
+        var cutIndex = Math.floor(Math.random() * text.length);
+        text = text.slice(cutIndex) + 'POLYCRYPT' + text.slice(0,cutIndex)         //cut and reversal
+    }else{
+        text = text.replace(/[^A-Z]/g,'')									//only base26 anyway
+    }
 
-	var seedLength = seed.length;
-	seedArray = new Array(seedLength);				//this is actually the seed mask
-	for(var i = 0; i < seedLength; i++){
-		seedArray[i] = base26.indexOf(seed.charAt(i))
-	}
+    var rawKeys = sharedPwd.trim().split('~');
+    for(var i = 0; i < 4; i++) rawKeys[i] = rawKeys[i].toUpperCase().removeDiacritics().replace(/[^A-Z]/g,'');	//remove accents, spaces, and all punctuation
+    var inputNum = isNaN(rawKeys[4]) ? 2: Math.max(2,Math.floor(Math.abs(rawKeys[4])));    //last entry may be a number, minimum accepted is 2
+    var globalSign = Math.pow(-1,inputNum);			//1 or -1
 
-	var isGoodSeed = false,							//so it calculates at least once. No iteration when decrypting
-		extendedText = text;							//initialize for decryption
+    var	base26B1arrays = makeAlphabet(compressKey(rawKeys[0],25)),
+        base26B2arrays = makeAlphabet(compressKey(rawKeys[1],25)),
+        base26B3arrays = makeAlphabet(compressKey(rawKeys[2],25)),
+        base26BArray1 = base26B1arrays[0],
+        base26BArray2 = base26B2arrays[0],
+        base26BArray3 = base26B3arrays[0],
+        base26Binverse1 = base26B1arrays[1],
+        base26Binverse2 = base26B2arrays[1],
+        seed = rawKeys[3];
+
+    var seedLength = seed.length;
+    seedArray = new Array(seedLength);				//this is actually the seed mask
+    for(var i = 0; i < seedLength; i++){
+        seedArray[i] = base26.indexOf(seed.charAt(i))
+    }
+
+    var isGoodSeed = false,						//so it calculates at least once. No iteration when decrypting
+        extendedText = text;							//initialize for decryption
   while(!isGoodSeed){
-	var	rndSeedArray = new Array(seedLength);	
-	if(isEncrypt){										//per-message random seed
-		var	dummySeed = '',
-			newIndex;
-		for(var i = 0; i < seedLength; i++){
-			newIndex = Math.floor(betterRandom()*26);	//avoid using Math.random() since this must be cryptographically secure
-			rndSeedArray[i] = newIndex;					//this contains the random seed		
-			dummySeed += base26.charAt(newIndex)
-		}
-		extendedText = dummySeed + text
-	}		
-		
-	var	length = extendedText.length,
-		textArray = new Array(length),
-		cipherArray = new Array(length);
+    var	rndSeedArray = new Array(seedLength);
+    if(isEncrypt){										//per-message random seed
+        var	dummySeed = '',
+            newIndex;
+        for(var i = 0; i < seedLength; i++){
+            newIndex = Math.floor(betterRandom()*26);	//avoid using Math.random() since this must be cryptographically secure
+            rndSeedArray[i] = newIndex;					//this contains the random seed
+            dummySeed += base26.charAt(newIndex)
+        }
+        extendedText = dummySeed + text
+    }
 
-	//now fill row 1 with numbers representing letters; this will be a lot faster than doing string operations
-	for(var i = 0; i < length; i++){
-		textArray[i] = base26.indexOf(extendedText.charAt(i))
-	}
-	
-	//if decrypting, extract the random seed
-	if(!isEncrypt){
-		for(var i = 0; i < seedLength; i++) rndSeedArray[i] = base26BArray2[(26 - base26Binverse1[textArray[i]] + seedArray[i]) % 26]
-	}
-	
-	//main calculation. First make the keystream
-	var stream = new Array(length);
-	for(var i = 0; i < seedLength; i++){
-		stream[i] = rndSeedArray[i]
-	}
+    var	length = extendedText.length,
+        textArray = new Array(length),
+        cipherArray = new Array(length);
+
+    //now fill row 1 with numbers representing letters; this will be a lot faster than doing string operations
+    for(var i = 0; i < length; i++){
+        textArray[i] = base26.indexOf(extendedText.charAt(i))
+    }
+
+    //if decrypting, extract the random seed
+    if(!isEncrypt){
+        for(var i = 0; i < seedLength; i++) rndSeedArray[i] = base26BArray1[(26 - base26Binverse2[textArray[i]] + seedArray[i]) % 26]
+    }
+
+    //main calculation. First make the keystream
+    var stream = new Array(length);
+    for(var i = 0; i < seedLength; i++){
+        stream[i] = rndSeedArray[i]
+    }
+
+    //rest of the keystream
 	for(var i = seedLength; i < length; i++){
-		stream[i] = base26BArray1[(26 - base26Binverse2[stream[i-seedLength]] + stream[i-seedLength+1]) % 26]
-	}
-	
-	//now test that the cipherstream obtained has sufficient quality, otherwise make another guess for the seed and repeat the process
-	if(isEncrypt){
-		var freqArray = frequencies(stream,26),											//first compute the frequency histogram
-			chiNumber = chiSquared(stream,freqArray,26),									//single letter chi-squared. Must be smaller than 34.4
-			corNumber = corrAtDistance(stream,freqArray,26,1);							//correlation chi-squared for consecutive letters. Must be smaller than 671
-		
-		isGoodSeed = (chiNumber < 34.4) && (corNumber < 671)							//this is the test for randomness of the keystream
-	}else{
-		isGoodSeed = true																	//automatic pass when decrypting
-	}
+        var sign = 1;
+        var partSum = 26*Math.floor(inputNum/2) - globalSign * base26Binverse1[stream[i-seedLength]];	//first term from top
+        for(j = 1; j < inputNum; j++){
+            partSum += stream[i-seedLength + j] * globalSign * sign;				//rest of terms, changing sign
+            sign = - sign
+        }
+        stream[i] = base26BArray3[partSum % 26]
+    }
+
+    //now test that the cipherstream obtained has sufficient quality, otherwise make another guess for the seed and repeat the process
+    if(isEncrypt){
+        var freqArray = frequencies(stream,26),											//first compute the frequency histogram
+            chiNumber = chiSquared(stream,freqArray,26),									//single letter chi-squared. Must be smaller than 34.4
+            corNumber = corrAtDistance(stream,freqArray,26,1);							//correlation chi-squared for consecutive letters. Must be smaller than 671
+
+        isGoodSeed = (chiNumber < 34.4) && (corNumber < 671)							//this is the test for randomness of the keystream
+    }else{
+        isGoodSeed = true																	//automatic pass when decrypting
+    }
   }																						//end of iteration for good seed
-	
-	stream = seedArray.concat(stream.slice(seedLength));											//replace random seed with original seed before the final operation
 
-	//now combine the plaintext (ciphertext) and the keystream using the Tabula Prava, and convert back to letters
-	for(var i = 0; i < length; i++) cipherArray[i] = isEncrypt ? base26.charAt(base26BArray1[(26 - base26Binverse2[textArray[i]] + stream[i]) % 26]) : base26.charAt(base26BArray2[(26 - base26Binverse1[textArray[i]] + stream[i]) % 26]);
-	var cipherText = cipherArray.join('');
+    stream = seedArray.concat(stream.slice(seedLength));											//replace random seed with original seed before the final operation
 
-	if(!isEncrypt){
-		cipherText = cipherText.slice(seedLength);										//remove dummy seed when decrypting
-		cipherText = cipherText.replace(/QQ/g,'. ').replace(/Q/g,' ').replace(/KU([AEIO])/g,'QU$1')
+    //now combine the plaintext (ciphertext) and the keystream using the Tabula Prava, and convert back to letters
+    for(var i = 0; i < length; i++){
+        if(isEncrypt){
+            cipherArray[i] = base26.charAt(base26BArray2[(26 - base26Binverse1[textArray[i]] + stream[i]) % 26])
+        }else{
+            cipherArray[i] = base26.charAt(base26BArray1[(26 - base26Binverse2[textArray[i]] + stream[i]) % 26])
+        }
+    }
+    var cipherText = cipherArray.join('');
+
+    if(!isEncrypt){
+        cipherText = cipherText.slice(seedLength);										//remove dummy seed when decrypting
+        var cutIndex = cipherText.indexOf("POLYCRYPT");                         //undo cut
+		if(cutIndex != -1) cipherText = cipherText.slice(cutIndex + 9) + cipherText.slice(0, cutIndex);
+        cipherText = cipherText.replace(/QQ/g,'. ').replace(/Q/g,' ').replace(/KU([AEIO])/g,'QU$1');
 		readBox.textContent = cipherText;
 		readMsg.textContent = 'human mode decryption finished';
 		openReadScreen();
 		callKey = ''
-	}else{
+    }else{
 		finishEncrypt(cipherText,isFileOut,isImageOut,false)
 	}
 }

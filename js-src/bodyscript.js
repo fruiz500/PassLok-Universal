@@ -72,7 +72,7 @@ window.onload = function() {
 	toolBar2.children[18].addEventListener("click", function() {formatDoc('removeFormat')});
 	toolBar2.children[19].addEventListener("click", function() {formatDoc('undo')});
 	toolBar2.children[20].addEventListener("click", function() {formatDoc('redo')});
-	toolBar2.children[25].addEventListener("click", function() {saveFiles('composeOut',true)});
+	toolBar2.children[25].addEventListener("click", function() {saveFiles('composeBox',true)});
 	imgFile.addEventListener('change', loadImage);
 	imgFile.addEventListener('click', function(){this.value = '';});
 	mainFile.addEventListener('change', loadFile);

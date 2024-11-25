@@ -354,7 +354,7 @@ function loadEncryptedFile(){
 			decrypt()
 		}
 		loadEncrFile.type = '';
-        loadEncrFileFile.type = 'file'            //reset file input
+        loadEncrFile.type = 'file'            //reset file input
 	}
 	if(fileToLoad.type.slice(0,4) == "text"){
 		fileReader.readAsText(fileToLoad, "UTF-8")

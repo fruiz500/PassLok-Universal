@@ -257,20 +257,17 @@ function preserveMaster(){
 }
 
 function preserveKeys(){
-	if(KeyStr){
 //		chrome.runtime.sendMessage({message: 'preserve_keys', KeyStr: KeyStr, myKey: myKey, myEmail: myEmail, myLockbin: myLockbin, myLock: myLock, myezLock: myezLock, locDir: locDir, prevWebsiteName: prevWebsiteName});
-		chrome.storage.session.set({"KeyStr": KeyStr});
-		chrome.storage.session.set({"myKey": JSON.stringify(Array.from(myKey))});
-		chrome.storage.session.set({"myEmail": myEmail});
-		chrome.storage.session.set({"myLockbin": JSON.stringify(Array.from(myLockbin))});
-		chrome.storage.session.set({"myLock": myLock});
-		chrome.storage.session.set({"myezLock": myezLock});
-		chrome.storage.session.set({"locDir": JSON.stringify(locDir)});
-		chrome.storage.session.set({"prevWebsiteName": prevWebsiteName});
-		chrome.alarms.create("PLUAlarm",
-			{"delayInMinutes": 5}
-		);
-	}
+	if(KeyStr) chrome.storage.session.set({"KeyStr": KeyStr});
+	if(myKey) chrome.storage.session.set({"myKey": JSON.stringify(Array.from(myKey))});
+	if(myEmail) chrome.storage.session.set({"myEmail": myEmail});
+	if(myLockbin) chrome.storage.session.set({"myLockbin": JSON.stringify(Array.from(myLockbin))});
+	if(myLock) chrome.storage.session.set({"myLock": myLock});
+	if(myezLock) chrome.storage.session.set({"myezLock": myezLock});
+	if(locDir) chrome.storage.session.set({"locDir": JSON.stringify(locDir)});
+	if(prevWebsiteName) chrome.storage.session.set({"prevWebsiteName": prevWebsiteName});
+	chrome.alarms.create("PLUAlarm",
+		{"delayInMinutes": 5})
 }
 
 function retrieveMaster(){
@@ -297,7 +294,7 @@ function retrieveKeys(){
 		if(result["myLockbin"]) myLockbin = new Uint8Array(JSON.parse(result["myLockbin"]))
 	})
 
-	if(callKey) doAction
+	if(callKey) doAction()
 }
 
 function nameFromURL(websiteURL){
@@ -343,7 +340,7 @@ function doSynth(clipOn) {
 					plain =	 nacl.util.decodeUTF8(memoBox.value.trim()),
 					pwd2 = wiseHash(masterPwd,websiteName),
 					cipher = nacl.secretbox(plain,nonce24,pwd2),
-					crypto = nacl.util.encodeBase64(concatUint8Arrays(nonce,cipher)).replace(/=+$/,'');
+					crypto = nacl.util.encodeBase64(concatUi8([nonce,cipher])).replace(/=+$/,'');
 			}
 			var jsonfile = {};
 			jsonfile[websiteName] = [serial1.value,userID.value,pwdLength.value,cryptoStr,crypto];
@@ -509,7 +506,7 @@ function pwdSynth(boxNumber, pwd, serial, isPin, isAlpha){
 					plain =	 nacl.util.decodeUTF8(sitePwd),
 					pwd2 = wiseHash(pwd,websiteName),
 					cipher = nacl.secretbox(plain,nonce24,pwd2);
-				cryptoStr = nacl.util.encodeBase64(concatUint8Arrays(nonce,cipher)).replace(/=+$/,'')
+				cryptoStr = nacl.util.encodeBase64(concatUi8([nonce,cipher])).replace(/=+$/,'')
 				return sitePwd
 			}
 		}
